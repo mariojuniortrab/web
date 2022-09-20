@@ -49,3 +49,40 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/", http.StatusMovedPermanently)
 }
+
+func Edit(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		log.Println("Id value is invalid.", err)
+	}
+
+	product := models.GetProduct(id)
+
+	templates.ExecuteTemplate(w, "Edit", product)
+}
+
+func Update(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		name := r.FormValue("name")
+		description := r.FormValue("description")
+
+		price, err := strconv.ParseFloat(r.FormValue("price"), 64)
+		if err != nil {
+			log.Println("Price value is invalid.", err)
+		}
+
+		amount, err := strconv.Atoi(r.FormValue("amount"))
+		if err != nil {
+			log.Println("Amount value is invalid.", err)
+		}
+
+		id, err := strconv.Atoi(r.FormValue("id"))
+		if err != nil {
+			log.Println("Id value is invalid.", err)
+		}
+
+		models.UpdateProduct(id, name, description, price, amount)
+	}
+
+	http.Redirect(w, r, "/", http.StatusMovedPermanently)
+}
